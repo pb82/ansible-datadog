@@ -9,7 +9,8 @@ commands:
       python:
         type: string
     steps:
-      - run: ansible-playbook -i ./ci_test/inventory/ci.ini "./ci_test/install_agent_<<parameters.version>>.yaml" -e 'ansible_python_interpreter=/usr/bin/<<parameters.python>>' --check
+      - run: ansible-playbook -i ./ci_test/inventory/ci.ini "./ci_test/install_agent_<<parameters.version>>.yaml" -e 'ansible_python_interpreter=/usr/bin/<<parameters.python>>'
+          --check
       - run: ansible-playbook -i ./ci_test/inventory/ci.ini "./ci_test/downgrade_to_5.yaml" -e 'ansible_python_interpreter=/usr/bin/<<parameters.python>>' --check
 
   install_agent_5:
@@ -32,9 +33,10 @@ commands:
         default: "false"
       inventory:
         type: string
-        default: "ci.ini"
+        default: ci.ini
     steps:
-      - run: ANSIBLE_JINJA2_NATIVE="<<parameters.jinja2_native>>" ansible-playbook -i ./ci_test/inventory/<<parameters.inventory>> "./ci_test/install_agent_<<parameters.version>>.yaml" -e 'ansible_python_interpreter=/usr/bin/<<parameters.python>>'
+      - run: ANSIBLE_JINJA2_NATIVE="<<parameters.jinja2_native>>" ansible-playbook -i ./ci_test/inventory/<<parameters.inventory>> "./ci_test/install_agent_<<parameters.version>>.yaml"
+          -e 'ansible_python_interpreter=/usr/bin/<<parameters.python>>'
       - run: datadog-agent version
 
   test_install_no_manage_config:
@@ -46,7 +48,8 @@ commands:
     steps:
       - run: ansible-playbook -i ./ci_test/inventory/ci.ini "./ci_test/install_agent_<<parameters.version>>.yaml" -e '{"ansible_python_interpreter":"/usr/bin/<<parameters.python>>","datadog_manage_config":false}'
       - run: bash -c '[ -f /etc/datadog-agent/datadog.yaml.example ] || [ -f /etc/dd-agent/datadog.conf.example ]'
-      - run: bash -c '[ ! -f /etc/datadog-agent/datadog.yaml ] && [ ! -f /etc/datadog-agent/system-probe.yaml ] && [ ! -f /etc/datadog-agent/security-agent.yaml ] && [ ! -f /etc/dd-agent/datadog.conf ]'
+      - run: bash -c '[ ! -f /etc/datadog-agent/datadog.yaml ] && [ ! -f /etc/datadog-agent/system-probe.yaml ] && [ ! -f /etc/datadog-agent/security-agent.yaml ]
+          && [ ! -f /etc/dd-agent/datadog.conf ]'
 
   downgrade_agent_5_32:
     parameters:
@@ -66,20 +69,20 @@ commands:
     steps:
       - checkout
       - dry_run:
-          version: "<<parameters.version>>"
-          python: "<<parameters.python>>"
+          version: <<parameters.version>>
+          python: <<parameters.python>>
       - install_agent_5:
-          python: "<<parameters.python>>"
+          python: <<parameters.python>>
       - when:
           condition:
             not:
               equal: [<<parameters.version>>, "5"]
           steps:
             - install_agent:
-                version: "<<parameters.version>>"
-                python: "<<parameters.python>>"
+                version: <<parameters.version>>
+                python: <<parameters.python>>
       - downgrade_agent_5_32:
-          python: "<<parameters.python>>"
+          python: <<parameters.python>>
 
   test_agent_install:
     parameters:
@@ -93,9 +96,9 @@ commands:
     steps:
       - checkout
       - install_agent:
-          version: "<<parameters.version>>"
-          python: "<<parameters.python>>"
-          jinja2_native: "<<parameters.jinja2_native>>"
+          version: <<parameters.version>>
+          python: <<parameters.python>>
+          jinja2_native: <<parameters.jinja2_native>>
 
   test_agent_install_macos:
     parameters:
@@ -109,10 +112,10 @@ commands:
     steps:
       - checkout
       - install_agent:
-          version: "<<parameters.version>>"
-          python: "<<parameters.python>>"
-          jinja2_native: "<<parameters.jinja2_native>>"
-          inventory: "ci_macos.ini"
+          version: <<parameters.version>>
+          python: <<parameters.python>>
+          jinja2_native: <<parameters.jinja2_native>>
+          inventory: ci_macos.ini
 
 jobs:
   ansible_lint:
@@ -137,8 +140,8 @@ jobs:
     steps:
       - checkout
       - test_agent_install_downgrade:
-          version: "<<parameters.agent_version>>"
-          python: "<<parameters.python>>"
+          version: <<parameters.agent_version>>
+          python: <<parameters.python>>
 
   test_install:
     parameters:
@@ -158,9 +161,9 @@ jobs:
     steps:
       - checkout
       - test_agent_install:
-          version: "<<parameters.agent_version>>"
-          python: "<<parameters.python>>"
-          jinja2_native: "<<parameters.jinja2_native>>"
+          version: <<parameters.agent_version>>
+          python: <<parameters.python>>
+          jinja2_native: <<parameters.jinja2_native>>
 
   test_install_no_manage_config:
     parameters:
@@ -177,8 +180,8 @@ jobs:
     steps:
       - checkout
       - test_install_no_manage_config:
-          version: "<<parameters.agent_version>>"
-          python: "<<parameters.python>>"
+          version: <<parameters.agent_version>>
+          python: <<parameters.python>>
 
   test_install_macos:
     parameters:
@@ -202,9 +205,9 @@ jobs:
           name: Install Ansible
           command: pip3 install ansible~=<<parameters.ansible_version>>
       - test_agent_install_macos:
-          version: "<<parameters.agent_version>>"
-          python: "<<parameters.python>>"
-          jinja2_native: "<<parameters.jinja2_native>>"
+          version: <<parameters.agent_version>>
+          python: <<parameters.python>>
+          jinja2_native: <<parameters.jinja2_native>>
 
 workflows:
   version: 2
@@ -219,8 +222,8 @@ workflows:
             parameters:
               ansible_version: ["2_6", "2_7", "2_8"]
               agent_version: ["5", "6", "7"]
-              os: ["debian"]
-              python: ["python2", "python3"]
+              os: [debian]
+              python: [python2, python3]
 
       # Newer debian images only have Pythpn 3 installed
       - test_install_downgrade:
@@ -228,8 +231,8 @@ workflows:
             parameters:
               ansible_version: ["2_9", "2_10", "3_4", "4_10", "5_3"]
               agent_version: ["5", "6", "7"]
-              os: ["debian"]
-              python: ["python3"]
+              os: [debian]
+              python: [python3]
 
       # Newer debian images only have Pythpn 3 installed
       - test_install_no_manage_config:
@@ -237,8 +240,8 @@ workflows:
             parameters:
               ansible_version: ["2_10", "3_4", "4_10"]
               agent_version: ["5", "7"]
-              os: ["debian"]
-              python: ["python3"]
+              os: [debian]
+              python: [python3]
 
       # centos = CentOS 7. CentOS <= 7 + Python3 is not supported,
       # as the yum module is Python2-only.
@@ -247,8 +250,8 @@ workflows:
             parameters:
               ansible_version: ["2_6", "2_7", "2_8", "2_9", "2_10", "3_4", "4_10"]
               agent_version: ["5", "6", "7"]
-              os: ["centos"]
-              python: ["python2"]
+              os: [centos]
+              python: [python2]
 
       # We want to check that the dnf path works with CentOS 8
       # Newer CentOS images only have Pythpn 3 installed
@@ -258,8 +261,8 @@ workflows:
               ansible_version: ["2_8", "2_9", "2_10", "3_4", "4_10"]
               agent_version: ["6", "7"]
               jinja2_native: ["true", "false"]
-              os: ["rocky8"]
-              python: ["python3"]
+              os: [rocky8]
+              python: [python3]
 
       # Newer suse images only have Python 3 installed
       - test_install:
@@ -267,8 +270,8 @@ workflows:
             parameters:
               ansible_version: ["2_8", "2_9", "2_10", "3_4", "4_10"]
               agent_version: ["6", "7"]
-              os: ["suse"]
-              python: ["python3"]
+              os: [suse]
+              python: [python3]
 
       # Amazon Linux 2 has yum only by default => we only use Python 3 with Ansible >= 4.10
       # because of the respawn_module functionality added to the yum module in
@@ -278,20 +281,20 @@ workflows:
             parameters:
               ansible_version: ["2_8", "2_9", "2_10", "3_4", "4_10"]
               agent_version: ["6", "7"]
-              os: ["amazonlinux2"]
-              python: ["python2"]
+              os: [amazonlinux2]
+              python: [python2]
 
       - test_install:
           matrix:
             parameters:
               ansible_version: ["4_10"]
               agent_version: ["6", "7"]
-              os: ["amazonlinux2"]
-              python: ["python3"]
+              os: [amazonlinux2]
+              python: [python3]
 
       - test_install_macos:
           matrix:
             parameters:
               ansible_version: ["2.8", "2.9", "2.10", "3.4", "4.10"]
-              agent_version: ["6_macos", "7_macos"]
-              python: ["python3"]
+              agent_version: [6_macos, 7_macos]
+              python: [python3]
