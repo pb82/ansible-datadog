@@ -109,7 +109,7 @@
   get_url:
     url: "{{ datadog_zypper_gpgkey_20280418 }}"
     dest: /tmp/DATADOG_RPM_KEY_20280418.public
-    checksum: "sha256:{{ datadog_zypper_gpgkey_20280418_sha256sum }}"
+    checksum: sha256:{{ datadog_zypper_gpgkey_20280418_sha256sum }}
     mode: 600
   when: ansible_distribution_version|int >= 12
 
