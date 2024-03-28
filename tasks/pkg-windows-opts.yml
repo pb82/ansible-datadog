@@ -37,30 +37,30 @@
 ## root is different than what's already present.
 - name: Validate config path
   fail:
-    msg: "Incompatible configuration option {{ agent_config_root_from_registry.value }} != {{ datadog_windows_config_files_dir }}"
-  when: ( (agent_config_root_from_registry.exists) and (datadog_windows_config_files_dir | length > 0 ) and (agent_config_root_from_registry.value
-    | regex_replace('\\\\$','') | lower != datadog_windows_config_files_dir | lower ) )
+    msg: Incompatible configuration option {{ agent_config_root_from_registry.value }} != {{ datadog_windows_config_files_dir }}
+  when: ( (agent_config_root_from_registry.exists) and (datadog_windows_config_files_dir | length > 0 ) and (agent_config_root_from_registry.value | regex_replace('\\\\$','')
+    | lower != datadog_windows_config_files_dir | lower ) )
 
 - name: Validated config path
   debug:
-    msg: "Allowing configuration option {{ agent_config_root_from_registry.value }} == {{ datadog_windows_config_files_dir }}"
-  when: ( (agent_config_root_from_registry.exists) and (datadog_windows_config_files_dir | length > 0 ) and (agent_config_root_from_registry.value
-    | regex_replace('\\\\$','') | lower == datadog_windows_config_files_dir | lower ) )
+    msg: Allowing configuration option {{ agent_config_root_from_registry.value }} == {{ datadog_windows_config_files_dir }}
+  when: ( (agent_config_root_from_registry.exists) and (datadog_windows_config_files_dir | length > 0 ) and (agent_config_root_from_registry.value | regex_replace('\\\\$','')
+    | lower == datadog_windows_config_files_dir | lower ) )
 
 ## validate the binary install path.  Only necessary if it's set in the registry alread (i.e. upgrade)
 ## Will fail the install if the caller has set the binary install path to a non-standard root, and that
 ## root is different than what's already present.
 - name: Validate install path
   fail:
-    msg: "Incompatible configuration option {{ agent_install_path_from_registry.value }} != {{ datadog_windows_program_files_dir }}"
-  when: ( (agent_install_path_from_registry.exists) and (datadog_windows_program_files_dir | length > 0 ) and (agent_install_path_from_registry.value
-    | regex_replace('\\\\$','') | lower != datadog_windows_program_files_dir | lower ) )
+    msg: Incompatible configuration option {{ agent_install_path_from_registry.value }} != {{ datadog_windows_program_files_dir }}
+  when: ( (agent_install_path_from_registry.exists) and (datadog_windows_program_files_dir | length > 0 ) and (agent_install_path_from_registry.value | regex_replace('\\\\$','')
+    | lower != datadog_windows_program_files_dir | lower ) )
 
 - name: Validated install path
   debug:
-    msg: "Allowing configuration option {{ agent_install_path_from_registry.value }} == {{ datadog_windows_program_files_dir }}"
-  when: ( (agent_install_path_from_registry.exists) and (datadog_windows_program_files_dir | length > 0 ) and (agent_install_path_from_registry.value
-    | regex_replace('\\\\$','') | lower == datadog_windows_program_files_dir | lower ) )
+    msg: Allowing configuration option {{ agent_install_path_from_registry.value }} == {{ datadog_windows_program_files_dir }}
+  when: ( (agent_install_path_from_registry.exists) and (datadog_windows_program_files_dir | length > 0 ) and (agent_install_path_from_registry.value | regex_replace('\\\\$','')
+    | lower == datadog_windows_program_files_dir | lower ) )
 
 - name: Set Program Files Target Directory
   set_fact:
