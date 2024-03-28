@@ -1,15 +1,14 @@
 ---
 - name: Fail early if Python 3 is used on CentOS / RHEL < 8 with old Ansible
   fail:
-    msg: "The installation of the Agent on RedHat family systems using yum is not compatible with Python 3 with older Ansible versions.
-      To run this role, use a Python 2 interpreter on hosts running CentOS / RHEL < 8 or upgrade Ansible to version 2.11+"
+    msg: The installation of the Agent on RedHat family systems using yum is not compatible with Python 3 with older Ansible versions. To run this role, use a Python
+      2 interpreter on hosts running CentOS / RHEL < 8 or upgrade Ansible to version 2.11+
   # We can't compare ansible_version.full with 2.11 in the condition below, because ansible's
   # `semver` and `strict` version_type don't recognize it as a valid version and the `loose`
   # version_type considers it to be a post-release. It seems that the best course of action
   # is to explicitly use just major.minor for comparison with 2.11.
   # See https://github.com/ansible/ansible/issues/78288
-  when: (not datadog_ignore_old_centos_python3_error) and
-    ("{}.{}".format(ansible_version.major, ansible_version.minor) is version("2.11", operator="lt", strict=True))
+  when: (not datadog_ignore_old_centos_python3_error) and ("{}.{}".format(ansible_version.major, ansible_version.minor) is version("2.11", operator="lt", strict=True))
     and (ansible_pkg_mgr == "yum") and (ansible_facts.python.version.major | int >= 3)
 
 - name: If yum repo configuration is enabled
@@ -45,7 +44,7 @@
         url: "{{ datadog_yum_gpgkey_e09422b3 }}"
         dest: /tmp/DATADOG_RPM_KEY_E09422B3.public
         mode: 600
-        checksum: "sha256:{{ datadog_yum_gpgkey_e09422b3_sha256sum }}"
+        checksum: sha256:{{ datadog_yum_gpgkey_e09422b3_sha256sum }}
 
     - name: Import new RPM key (Expires in 2022)
       rpm_key:
@@ -58,7 +57,7 @@
         url: "{{ datadog_yum_gpgkey_20200908 }}"
         dest: /tmp/DATADOG_RPM_KEY_20200908.public
         mode: 600
-        checksum: "sha256:{{ datadog_yum_gpgkey_20200908_sha256sum }}"
+        checksum: sha256:{{ datadog_yum_gpgkey_20200908_sha256sum }}
 
     - name: Import new RPM key (Expires in 2024)
       rpm_key:
@@ -71,7 +70,7 @@
         url: "{{ datadog_yum_gpgkey_20280418 }}"
         dest: /tmp/DATADOG_RPM_KEY_20280418.public
         mode: 600
-        checksum: "sha256:{{ datadog_yum_gpgkey_20280418_sha256sum }}"
+        checksum: sha256:{{ datadog_yum_gpgkey_20280418_sha256sum }}
 
     - name: Import new RPM key (Expires in 2028)
       rpm_key:
@@ -81,8 +80,8 @@
 
     - name: Set versioned includepkgs variable
       set_fact:
-        agent_datadog_includepkgs:
-          "{{ datadog_agent_flavor }}-{{ agent_datadog_agent_redhat_version | regex_replace('^\\d+:', '') }} {{ datadog_inject_apm_flavor }}"
+        agent_datadog_includepkgs: "{{ datadog_agent_flavor }}-{{ agent_datadog_agent_redhat_version | regex_replace('^\\d+:', '') }} {{ datadog_inject_apm_flavor
+          }}"
       when: agent_datadog_agent_redhat_version is defined
 
     - name: Set plain includepkgs variable
@@ -99,12 +98,11 @@
         includepkgs: "{{ agent_datadog_includepkgs }}"
         repo_gpgcheck: false # we don't sign Agent 5 repodata
         gpgcheck: "{{ datadog_yum_gpgcheck }}"
-        gpgkey: [
-          "{{ datadog_yum_gpgkey_current }}",
-          "{{ datadog_yum_gpgkey_20280418 }}",
-          "{{ datadog_yum_gpgkey_20200908 }}",
-          "{{ datadog_yum_gpgkey_e09422b3 }}",
-        ]
+        gpgkey:
+          - "{{ datadog_yum_gpgkey_current }}"
+          - "{{ datadog_yum_gpgkey_20280418 }}"
+          - "{{ datadog_yum_gpgkey_20200908 }}"
+          - "{{ datadog_yum_gpgkey_e09422b3 }}"
         proxy: "{{ datadog_yum_repo_proxy if datadog_yum_repo_proxy != '' else omit }}"
         proxy_username: "{{ datadog_yum_repo_proxy_username if datadog_yum_repo_proxy_username != '' else omit }}"
         proxy_password: "{{ datadog_yum_repo_proxy_password if datadog_yum_repo_proxy_password != '' else omit }}"
@@ -120,12 +118,11 @@
         includepkgs: "{{ agent_datadog_includepkgs }}"
         repo_gpgcheck: "{{ agent_do_yum_repo_gpgcheck }}"
         gpgcheck: "{{ datadog_yum_gpgcheck }}"
-        gpgkey: [
-          "{{ datadog_yum_gpgkey_current }}",
-          "{{ datadog_yum_gpgkey_20280418 }}",
-          "{{ datadog_yum_gpgkey_20200908 }}",
-          "{{ datadog_yum_gpgkey_e09422b3 }}",
-        ]
+        gpgkey:
+          - "{{ datadog_yum_gpgkey_current }}"
+          - "{{ datadog_yum_gpgkey_20280418 }}"
+          - "{{ datadog_yum_gpgkey_20200908 }}"
+          - "{{ datadog_yum_gpgkey_e09422b3 }}"
         proxy: "{{ datadog_yum_repo_proxy if datadog_yum_repo_proxy != '' else omit }}"
         proxy_username: "{{ datadog_yum_repo_proxy_username if datadog_yum_repo_proxy_username != '' else omit }}"
         proxy_password: "{{ datadog_yum_repo_proxy_password if datadog_yum_repo_proxy_password != '' else omit }}"
@@ -141,12 +138,11 @@
         includepkgs: "{{ agent_datadog_includepkgs }}"
         repo_gpgcheck: "{{ agent_do_yum_repo_gpgcheck }}"
         gpgcheck: "{{ datadog_yum_gpgcheck }}"
-        gpgkey: [
-          "{{ datadog_yum_gpgkey_current }}",
-          "{{ datadog_yum_gpgkey_20280418 }}",
-          "{{ datadog_yum_gpgkey_20200908 }}",
-          "{{ datadog_yum_gpgkey_e09422b3 }}",
-        ]
+        gpgkey:
+          - "{{ datadog_yum_gpgkey_current }}"
+          - "{{ datadog_yum_gpgkey_20280418 }}"
+          - "{{ datadog_yum_gpgkey_20200908 }}"
+          - "{{ datadog_yum_gpgkey_e09422b3 }}"
         proxy: "{{ datadog_yum_repo_proxy if datadog_yum_repo_proxy != '' else omit }}"
         proxy_username: "{{ datadog_yum_repo_proxy_username if datadog_yum_repo_proxy_username != '' else omit }}"
         proxy_password: "{{ datadog_yum_repo_proxy_password if datadog_yum_repo_proxy_password != '' else omit }}"
@@ -162,12 +158,11 @@
         includepkgs: "{{ agent_datadog_includepkgs }}"
         repo_gpgcheck: "{{ agent_do_yum_repo_gpgcheck }}"
         gpgcheck: "{{ datadog_yum_gpgcheck }}"
-        gpgkey: [
-          "{{ datadog_yum_gpgkey_current }}",
-          "{{ datadog_yum_gpgkey_20280418 }}",
-          "{{ datadog_yum_gpgkey_20200908 }}",
-          "{{ datadog_yum_gpgkey_e09422b3 }}",
-        ]
+        gpgkey:
+          - "{{ datadog_yum_gpgkey_current }}"
+          - "{{ datadog_yum_gpgkey_20280418 }}"
+          - "{{ datadog_yum_gpgkey_20200908 }}"
+          - "{{ datadog_yum_gpgkey_e09422b3 }}"
         proxy: "{{ datadog_yum_repo_proxy if datadog_yum_repo_proxy != '' else omit }}"
         proxy_username: "{{ datadog_yum_repo_proxy_username if datadog_yum_repo_proxy_username != '' else omit }}"
         proxy_password: "{{ datadog_yum_repo_proxy_password if datadog_yum_repo_proxy_password != '' else omit }}"
